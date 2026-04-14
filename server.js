@@ -16,6 +16,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/fields', require('./routes/fieldRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/matches', require('./routes/matchRoutes'));
+app.use('/api/news', require('./routes/newsRoutes'));
 
 // Route thử nghiệm hệ thống
 app.get('/', (req, res) => {
