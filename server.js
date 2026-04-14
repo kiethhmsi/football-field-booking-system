@@ -13,6 +13,7 @@ require('./config/db');
 
 // Nạp các Routes (API Endpoints)
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/fields', require('./routes/fieldRoutes'));
 
 // Route thử nghiệm hệ thống
 app.get('/', (req, res) => {
