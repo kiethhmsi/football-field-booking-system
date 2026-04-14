@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './index.css';
+import Login from './pages/Login';
 
 // Tạm thời tạo Trang Chủ mẫu trống để chèn code vào sau
 const Home = () => (
@@ -24,8 +25,8 @@ function App() {
                     <Link to="/news" style={{ textDecoration: 'none', color: 'var(--text-main)', fontWeight: 500 }}>Tin tức</Link>
                 </nav>
                 <div className="d-flex gap-1">
-                    <button className="btn btn-outline" style={{padding: '8px 16px', fontSize: '14px'}}>Đăng nhập</button>
-                    <button className="btn btn-primary" style={{padding: '8px 16px', fontSize: '14px'}}>Đặt sân ngay</button>
+                    <Link to="/login" className="btn btn-outline" style={{padding: '8px 16px', fontSize: '14px', textDecoration: 'none'}}>Đăng nhập</Link>
+                    <Link to="/fields" className="btn btn-primary" style={{padding: '8px 16px', fontSize: '14px', textDecoration: 'none'}}>Đặt sân ngay</Link>
                 </div>
             </div>
         </header>
@@ -34,7 +35,9 @@ function App() {
         <main style={{ minHeight: '75vh' }}>
             <Routes>
                 <Route path="/" element={<Home />} />
-                {/* Ở Bước 2, 3, 4 mình sẽ nhét các Trang Đăng nhập, Danh sách Sân vào đây */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<div className="container" style={{padding:'60px'}}><h2 style={{textAlign:'center'}}>Tính năng Đăng Ký đang được phát triển...</h2></div>} />
+                {/* Ở Bước 3, 4 mình sẽ nhét các Trang Danh sách Sân vào đây */}
             </Routes>
         </main>
 
