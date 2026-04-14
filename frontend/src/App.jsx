@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './index.css';
 import Login from './pages/Login';
+import Fields from './pages/Fields';
 
 // Tạm thời tạo Trang Chủ mẫu trống để chèn code vào sau
 const Home = () => (
@@ -37,7 +38,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<div className="container" style={{padding:'60px'}}><h2 style={{textAlign:'center'}}>Tính năng Đăng Ký đang được phát triển...</h2></div>} />
-                {/* Ở Bước 3, 4 mình sẽ nhét các Trang Danh sách Sân vào đây */}
+                <Route path="/fields" element={<Fields />} />
+                <Route path="/booking" element={<div className="container" style={{padding:'60px'}}><h2 style={{textAlign:'center'}}>Màn hình Đặt sân nhiều bước sẽ xuất hiện ở Step 4...</h2></div>} />
             </Routes>
         </main>
 
