@@ -24,7 +24,7 @@ const AppContent = () => {
             <header style={{ backgroundColor: 'var(--bg-white)', padding: '15px 0', borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, zIndex: 100 }}>
                 <div className="container d-flex justify-between align-center">
                     <Link to="/" style={{ textDecoration: 'none' }}>
-                        <h2 style={{ color: 'var(--text-main)', fontSize: '20px', margin: 0, fontWeight: 800 }}>Sân bóng đá <span style={{ color: 'var(--primary-color)' }}>KAKAKA</span></h2>
+                        <h2 style={{ color: 'var(--primary-color)', fontSize: '20px', margin: 0, fontWeight: 800 }}>Sân bóng đá KaSport</h2>
                     </Link>
                     
                     <nav style={{ display: 'flex', gap: '24px', fontSize: '15px' }}>
@@ -71,7 +71,7 @@ const AppContent = () => {
                     
                     {/* Cột 1 */}
                     <div style={{ flex: 2 }}>
-                        <h2 style={{ color: 'var(--primary-color)', margin: '0 0 15px 0', fontSize: '20px', fontWeight: 800 }}>Sân bóng đá KAKAKA</h2>
+                        <h2 style={{ color: 'var(--primary-color)', margin: '0 0 15px 0', fontSize: '20px', fontWeight: 800 }}>Sân bóng đá KaSport</h2>
                         <p style={{ color: '#9ca3af', fontSize: '14px', lineHeight: '1.6', maxWidth: '300px' }}>
                             Nền tảng đặt sân thể thao trực tuyến hàng đầu Việt Nam. Nhanh chóng, dễ dàng và cực tiện lợi!
                         </p>
@@ -113,7 +113,7 @@ const AppContent = () => {
                 </div>
                 
                 <div className="container" style={{ textAlign: 'left', color: '#9ca3af', fontSize: '13px' }}>
-                    © 2026 KAKAKA. All rights reserved.
+                    © 2026 KaSport. All rights reserved.
                 </div>
             </footer>
         )}
