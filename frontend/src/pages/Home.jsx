@@ -6,6 +6,15 @@ const Home = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState('');
 
+  const [tempDateTime, setTempDateTime] = useState('');
+
+  const handleConfirmDateTime = () => {
+    if (tempDateTime) {
+      setSelectedDateTime(tempDateTime.replace('T', ' '));
+    }
+    setShowDatePicker(false);
+  };
+
   const hoverStyles = `
     .category-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -119,15 +128,31 @@ const Home = () => {
                  <span style={{ fontSize: '12px' }}>▼</span>
               </div>
               {showDatePicker && (
-                <div style={{ position: 'absolute', top: '100%', left: 0, backgroundColor: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', zIndex: 20, marginTop: '10px' }}>
-                  <input 
-                    type="datetime-local" 
-                    onChange={(e) => {
-                      setSelectedDateTime(e.target.value.replace('T', ' '));
-                      setShowDatePicker(false);
-                    }} 
-                    style={{ border: '1px solid #e2e8f0', borderRadius: '4px', padding: '5px', outline: 'none' }} 
-                  />
+                <div style={{ position: 'absolute', top: '100%', left: 0, backgroundColor: 'white', padding: '20px', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 100, marginTop: '15px', width: '280px', border: '1px solid #f1f5f9' }}>
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#94a3b8', marginBottom: '8px' }}>CHỌN THỜI GIAN</label>
+                    <input 
+                      type="datetime-local" 
+                      defaultValue={tempDateTime}
+                      onChange={(e) => setTempDateTime(e.target.value)} 
+                      style={{ 
+                        width: '100%', border: '1px solid #e2e8f0', borderRadius: '10px', 
+                        padding: '12px', outline: 'none', fontSize: '14px', fontFamily: 'inherit' 
+                      }} 
+                    />
+                  </div>
+                  <button 
+                    onClick={handleConfirmDateTime}
+                    style={{ 
+                      width: '100%', backgroundColor: 'var(--primary-color)', color: 'white', 
+                      border: 'none', padding: '12px', borderRadius: '10px', fontWeight: 700, 
+                      cursor: 'pointer', transition: '0.2s' 
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+                    onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                  >
+                    Xác nhận
+                  </button>
                 </div>
               )}
             </div>
