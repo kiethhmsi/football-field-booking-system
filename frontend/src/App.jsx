@@ -13,6 +13,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import BookingHistory from './pages/BookingHistory';
 import FieldDetail from './pages/FieldDetail';
+import News from './pages/News';
 
 // Tách riêng cục AppContent để có thể dùng được Hook useLocation() điều khiển ẩn hiện Layout
 const AppContent = () => {
@@ -123,6 +124,7 @@ const AppContent = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/fields" element={<Fields />} />
                 <Route path="/fields/:id" element={<FieldDetail />} />
+                <Route path="/news" element={<News />} />
                 <Route path="/booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
                 <Route path="/matches" element={<Matchmaking />} />
                 <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
