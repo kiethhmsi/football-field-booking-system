@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const [showPromoModal, setShowPromoModal] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDateTime, setSelectedDateTime] = useState('');
+
   const hoverStyles = `
     .category-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -60,6 +64,7 @@ const Home = () => {
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
       <style>{hoverStyles}</style>
+      
       {/* 1. HERO SECTION */}
       <section style={{ 
         position: 'relative', 
@@ -86,7 +91,7 @@ const Home = () => {
           </Link>
         </div>
 
-        {/* SEARCH BAR WIDGET (Overlapping bottom) */}
+        {/* SEARCH BAR WIDGET */}
         <div style={{
           position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)',
           backgroundColor: 'white', padding: '12px 15px', borderRadius: '50px',
@@ -105,11 +110,26 @@ const Home = () => {
               </select>
             </div>
           </div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', padding: '5px 20px' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', padding: '5px 20px', position: 'relative' }}>
             <span style={{color: 'var(--primary-color)', fontSize: '20px'}}>📅</span>
             <div style={{ textAlign: 'left', width: '100%' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>NGÀY ĐÁ & GIỜ</div>
-              <input type="text" placeholder="Hôm nay, 17:30" style={{ border: 'none', outline: 'none', width: '100%', fontSize: '14px', fontWeight: 600, padding: '5px 0 0 0', color: '#0f172a' }} />
+              <div onClick={() => setShowDatePicker(!showDatePicker)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                 <span style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{selectedDateTime || "Chọn ngày & giờ"}</span>
+                 <span style={{ fontSize: '12px' }}>▼</span>
+              </div>
+              {showDatePicker && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, backgroundColor: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', zIndex: 20, marginTop: '10px' }}>
+                  <input 
+                    type="datetime-local" 
+                    onChange={(e) => {
+                      setSelectedDateTime(e.target.value.replace('T', ' '));
+                      setShowDatePicker(false);
+                    }} 
+                    style={{ border: '1px solid #e2e8f0', borderRadius: '4px', padding: '5px', outline: 'none' }} 
+                  />
+                </div>
+              )}
             </div>
           </div>
           <Link to="/fields" className="btn btn-primary" style={{ padding: '16px 40px', borderRadius: '40px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
@@ -126,9 +146,9 @@ const Home = () => {
           
           <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
             {[
-              { type: 'Sân 5', label: 'Sân 5 người', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop' },
-              { type: 'Sân 7', label: 'Sân 7 người', img: 'https://images.unsplash.com/photo-1620122303020-87ec826cf70d?q=80&w=600&auto=format&fit=crop' },
-              { type: 'Sân 11', label: 'Sân 11 người', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=600&auto=format&fit=crop' }
+              { type: 'Sân 5', label: 'Sân 5 người', img: '/san5.png' },
+              { type: 'Sân 7', label: 'Sân 7 người', img: '/san7.png' },
+              { type: 'Sân 11', label: 'Sân 11 người', img: '/san11.png' }
             ].map((item, idx) => (
               <Link to="/fields" state={{ filterType: item.type }} key={idx} style={{ flex: 1, minWidth: '220px' }} className="category-card">
                 <img src={item.img} alt={item.label} className="card-img" />
@@ -142,7 +162,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. QUY TRÌNH BA BƯỚC MÀU ĐEN */}
+      {/* 3. QUY TRÌNH BA BƯỚC */}
       <section style={{ backgroundColor: '#111827', padding: '80px 0', color: 'white', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: '800px' }}>
           <p style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-color)', margin: '0 0 10px 0', letterSpacing: '1px' }}>QUY TRÌNH</p>
@@ -150,20 +170,22 @@ const Home = () => {
           <p style={{ color: '#9ca3af', marginBottom: '50px', fontSize: '15px' }}>Nhanh chóng, dễ dàng, không cần lằng nhằng phức tạp</p>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
-            {/* Đường gạch ngang nối 3 bước (Đóng vai trò nét gạch nền) */}
             <div style={{ position: 'absolute', top: '35px', left: '15%', right: '15%', height: '1px', backgroundColor: '#374151', zIndex: 0 }}></div>
             
             <div style={{ textAlign: 'center', position: 'relative', zIndex: 1, backgroundColor: '#111827', padding: '0 20px' }}>
               <div style={{ width: '70px', height: '70px', border: '2px solid var(--primary-color)', borderRadius: '50%', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 700, color: 'var(--primary-color)', backgroundColor: '#111827' }}>1</div>
-              <p style={{ fontWeight: 600, fontSize: '16px' }}>Tìm sân</p>
+              <p style={{ fontWeight: 600, fontSize: '16px', margin: 0 }}>Tìm sân phù hợp</p>
+              <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '5px' }}>Loại sân, giá</p>
             </div>
             <div style={{ textAlign: 'center', position: 'relative', zIndex: 1, backgroundColor: '#111827', padding: '0 20px' }}>
               <div style={{ width: '70px', height: '70px', border: '2px solid var(--primary-color)', borderRadius: '50%', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 700, color: 'var(--primary-color)', backgroundColor: '#111827' }}>2</div>
-              <p style={{ fontWeight: 600, fontSize: '16px' }}>Chọn ngày & tự do</p>
+              <p style={{ fontWeight: 600, fontSize: '16px', margin: 0 }}>Chọn ngày & giờ</p>
+              <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '5px' }}>Xem lịch trống real-time</p>
             </div>
             <div style={{ textAlign: 'center', position: 'relative', zIndex: 1, backgroundColor: '#111827', padding: '0 20px' }}>
               <div style={{ width: '70px', height: '70px', border: '2px solid var(--primary-color)', borderRadius: '50%', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 700, color: 'var(--primary-color)', backgroundColor: '#111827' }}>3</div>
-              <p style={{ fontWeight: 600, fontSize: '16px' }}>Xác nhận & đá ngay</p>
+              <p style={{ fontWeight: 600, fontSize: '16px', margin: 0 }}>Đặt sân & thanh toán</p>
+              <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '5px' }}>Nhận mã sân ngay lập tức</p>
             </div>
           </div>
         </div>
@@ -171,20 +193,22 @@ const Home = () => {
 
       {/* 4. KHUYẾN MÃI & NHẬN XÉT */}
       <section style={{ padding: '80px 0', backgroundColor: '#fafbfc' }}>
-        <div className="container" style={{ display: 'flex', gap: '30px' }}>
+        <div className="container" style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
           
-          <div style={{ flex: 2, backgroundColor: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ flex: 2, minWidth: '300px', backgroundColor: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#0f172a', marginBottom: '20px' }}>Khuyến mãi lần đầu<br/>đặt sân</h2>
-            <p style={{ color: '#64748b', marginBottom: '30px', fontSize: '15px', maxWidth: '350px' }}>Áp dụng mã giảm giá 20% cho lần đặt sân đầu tiên hoặc thành viên mới.</p>
+            <p style={{ color: '#64748b', marginBottom: '20px', fontSize: '15px', maxWidth: '400px' }}>
+              <strong>MÃ: FIRST20</strong> – Giảm 20% (tối đa 100k) cho áp dụng cho mọi loại sân.
+            </p>
             <div>
-               <Link to="/register" className="btn btn-primary" style={{ padding: '12px 30px', borderRadius: '30px', fontWeight: 600, textDecoration: 'none' }}>Nhận mã ngay</Link>
+               <button onClick={() => setShowPromoModal(true)} className="btn btn-primary" style={{ padding: '12px 30px', borderRadius: '30px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Nhận mã ngay</button>
             </div>
           </div>
           
-          <div style={{ flex: 1, backgroundColor: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9' }}>
+          <div style={{ flex: 1, minWidth: '300px', backgroundColor: 'white', borderRadius: '16px', padding: '40px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px', backgroundColor: '#f0fdf4', padding: '10px 20px', borderRadius: '30px', width: 'max-content' }}>
               <div style={{ width: '20px', height: '20px', border: '2px solid #16a34a', color: '#16a34a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold' }}>✓</div>
-              <h3 style={{ fontSize: '14px', margin: 0, color: '#15803d', fontWeight: 700 }}>Đánh giá của khách hàng</h3>
+              <h3 style={{ fontSize: '14px', margin: 0, color: '#15803d', fontWeight: 700 }}>Đánh giá khách hàng</h3>
             </div>
             
             <p style={{ fontSize: '15px', color: '#475569', fontStyle: 'italic', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -202,20 +226,16 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. GIGI PHÁP CÔNG NGHỆ BANNER XANH LÁ CÂY ĐẬM */}
+      {/* 5. LIÊN HỆ BANNER */}
       <section style={{ padding: '0 0 80px 0', backgroundColor: '#fafbfc' }}>
         <div className="container">
-          <div style={{ backgroundColor: 'var(--primary-color)', borderRadius: '16px', padding: '50px 60px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 20px 40px rgba(13, 131, 65, 0.2)' }}>
-            
+          <div style={{ backgroundColor: 'var(--primary-color)', borderRadius: '16px', padding: '50px 60px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '30px', boxShadow: '0 20px 40px rgba(13, 131, 65, 0.2)' }}>
             <div>
               <span style={{ backgroundColor: 'rgba(255,255,255,0.15)', padding: '6px 18px', borderRadius: '20px', fontSize: '11px', fontWeight: 800, display: 'inline-block', marginBottom: '20px', letterSpacing: '0.5px' }}>
                 GIẢI PHÁP CÔNG NGHỆ
               </span>
-              <h2 style={{ fontSize: '36px', margin: '0 0 30px 0', fontWeight: 800 }}>Sân Bóng Đá Chuyên Nghiệp</h2>
-              <button style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'white', padding: '12px 25px', borderRadius: '30px', display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontWeight: 600, transition: 'background 0.3s' }}
-                 onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)' }}
-                 onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
-              >
+              <h2 style={{ fontSize: '36px', margin: '0 0 30px 0', fontWeight: 800 }}>Sân Bóng Đá KaSport</h2>
+              <button style={{ backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'white', padding: '12px 25px', borderRadius: '30px', display: 'inline-flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontWeight: 600 }}>
                 📞 <span style={{fontSize: '16px'}}>0123 456 789</span>
               </button>
             </div>
@@ -229,15 +249,24 @@ const Home = () => {
                 <span style={{ border: '2px solid rgba(255,255,255,0.5)', borderRadius: '50%', width:'24px', height:'24px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight: 'bold' }}>✓</span>
                 <span style={{ fontSize: '15px', fontWeight: 500 }}>Báo cáo doanh thu chi tiết trực quan</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ border: '2px solid rgba(255,255,255,0.5)', borderRadius: '50%', width:'24px', height:'24px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight: 'bold' }}>✓</span>
-                <span style={{ fontSize: '15px', fontWeight: 500 }}>Thông báo email cập nhật cho người dùng</span>
-              </div>
             </div>
-
           </div>
         </div>
       </section>
+
+      {/* PROMO MODAL */}
+      {showPromoModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ backgroundColor: 'white', padding: '40px', borderRadius: '20px', textAlign: 'center', position: 'relative', maxWidth: '400px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ fontSize: '50px', marginBottom: '20px' }}>🎉</div>
+            <h3 style={{ fontSize: '24px', marginBottom: '10px', color: '#0f172a' }}>Bạn đã nhận ưu đãi!</h3>
+            <p style={{ color: '#64748b', marginBottom: '20px' }}>Mã: <strong style={{ color: 'var(--primary-color)', fontSize: '20px' }}>FIRST20</strong></p>
+            <p style={{ marginBottom: '30px', fontSize: '14px' }}>Mã giảm giá đã được lưu vào tài khoản của bạn.</p>
+            <Link to="/fields" onClick={() => setShowPromoModal(false)} className="btn btn-primary" style={{ padding: '15px 30px', borderRadius: '30px', textDecoration: 'none', fontWeight: 700, display: 'block' }}>Đặt sân ngay</Link>
+            <button onClick={() => setShowPromoModal(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#94a3b8' }}>×</button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

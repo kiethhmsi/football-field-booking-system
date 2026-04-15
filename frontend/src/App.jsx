@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation, Navigate } from 'react-router-dom';
 import './index.css';
 
 import Login from './pages/Login';
@@ -9,10 +9,42 @@ import Matchmaking from './pages/Matchmaking';
 import AdminDashboard from './pages/AdminDashboard';
 
 import Home from './pages/Home';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import BookingHistory from './pages/BookingHistory';
+import FieldDetail from './pages/FieldDetail';
 
 // Tách riêng cục AppContent để có thể dùng được Hook useLocation() điều khiển ẩn hiện Layout
 const AppContent = () => {
     const location = useLocation();
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+    // Đồng bộ lại trạng thái khi localStorage thay đổi (quan trọng khi Login xong)
+    useEffect(() => {
+        const checkAuth = () => {
+            setIsLoggedIn(!!localStorage.getItem('token'));
+        };
+        window.addEventListener('storage', checkAuth);
+        // Interval nhỏ để check case Login trong cùng 1 tab
+        const interval = setInterval(checkAuth, 1000);
+        return () => {
+            window.removeEventListener('storage', checkAuth);
+            clearInterval(interval);
+        };
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        setShowUserMenu(false);
+        window.location.href = '/login';
+    };
+
+    // Thành phần bảo vệ route
+    const ProtectedRoute = ({ children }) => {
+        return isLoggedIn ? children : <Navigate to="/login" replace />;
+    };
     
     // Nếu link bắt đầu bằng /admin thì Giao diện chỉ hiện Sidebar Admin thôi (Giống Shopee Kênh Người Bán)
     const isAdminMode = location.pathname.startsWith('/admin');
@@ -35,17 +67,49 @@ const AppContent = () => {
                     </nav>
                     
                     <div className="d-flex gap-1 align-center">
-                        <Link to="/login" style={{ fontSize: '14px', textDecoration: 'none', color: '#0f172a', fontWeight: 600, padding: '8px 12px' }}>➜ Đăng nhập</Link>
-                        <Link to="/register" style={{ fontSize: '14px', textDecoration: 'none', color: '#0f172a', fontWeight: 600, padding: '8px 12px' }}>Đăng ký</Link>
-                        <Link to="/fields" className="btn btn-primary" style={{padding: '10px 20px', fontSize: '14px', fontWeight: 600, borderRadius: '20px', textDecoration: 'none', marginLeft: '10px'}}>Đặt sân ngay</Link>
-                        
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '15px', paddingLeft: '15px', borderLeft: '1px solid #e2e8f0' }}>
-                            <div style={{ textAlign: 'right' }}>
-                              <p style={{ margin: 0, fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>User</p>
-                              <p style={{ margin: 0, fontSize: '10px', color: '#64748b' }}>Người dùng</p>
+                        {!isLoggedIn ? (
+                            <>
+                                <Link to="/login" style={{ fontSize: '14px', textDecoration: 'none', color: '#0f172a', fontWeight: 600, padding: '8px 12px' }}>➜ Đăng nhập</Link>
+                                <Link to="/register" style={{ fontSize: '14px', textDecoration: 'none', color: '#0f172a', fontWeight: 600, padding: '8px 12px' }}>Đăng ký</Link>
+                            </>
+                        ) : (
+                            <div 
+                                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '15px', paddingLeft: '15px', borderLeft: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative' }}
+                                onClick={() => setShowUserMenu(!showUserMenu)}
+                            >
+                                <div style={{ textAlign: 'right' }}>
+                                <p style={{ margin: 0, fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>User</p>
+                                <p style={{ margin: 0, fontSize: '10px', color: '#64748b' }}>Người dùng</p>
+                                </div>
+                                <div style={{ width: '35px', height: '35px', backgroundColor: '#fb923c', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 0 1px #e2e8f0' }}></div>
+                                
+                                {/* DROPDOWN MENU TỪ MOCKUP */}
+                                {showUserMenu && (
+                                    <div style={{
+                                        position: 'absolute', top: '120%', right: 0, backgroundColor: 'white',
+                                        borderRadius: '16px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                                        width: '220px', zIndex: 1000, overflow: 'hidden', border: '1px solid #f1f5f9'
+                                    }}>
+                                        <div style={{ padding: '20px', backgroundColor: '#f0f9ff', borderBottom: '1px solid #e0f2fe' }}>
+                                            <p style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0369a1' }}>User Profile</p>
+                                        </div>
+                                        <div style={{ padding: '8px' }}>
+                                            <Link to="/profile" onClick={() => setShowUserMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', textDecoration: 'none', color: '#0f172a', fontSize: '14px', fontWeight: 600, borderRadius: '10px', transition: '0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor='#f0f9ff'} onMouseOut={(e) => e.currentTarget.style.backgroundColor='transparent'}>
+                                                <span style={{fontSize: '18px'}}>👤</span> Hồ sơ cá nhân
+                                            </Link>
+                                            <Link to="/history" onClick={() => setShowUserMenu(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', textDecoration: 'none', color: '#0f172a', fontSize: '14px', fontWeight: 600, borderRadius: '10px', transition: '0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor='#f0f9ff'} onMouseOut={(e) => e.currentTarget.style.backgroundColor='transparent'}>
+                                                <span style={{fontSize: '18px'}}>🕒</span> Lịch sử đặt sân
+                                            </Link>
+                                            <div style={{ height: '1px', backgroundColor: '#f1f5f9', margin: '4px 0' }}></div>
+                                            <div onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', textDecoration: 'none', color: '#ef4444', fontSize: '14px', fontWeight: 700, borderRadius: '10px', transition: '0.2s', cursor: 'pointer' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor='#fef2f2'} onMouseOut={(e) => e.currentTarget.style.backgroundColor='transparent'}>
+                                                <span style={{fontSize: '18px'}}>📤</span> Đăng xuất
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            <div style={{ width: '35px', height: '35px', backgroundColor: '#fb923c', borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 0 1px #e2e8f0' }}></div>
-                        </div>
+                        )}
+                        <Link to="/fields" className="btn btn-primary" style={{padding: '10px 20px', fontSize: '14px', fontWeight: 600, borderRadius: '20px', textDecoration: 'none', marginLeft: '10px'}}>Đặt sân ngay</Link>
                     </div>
                 </div>
             </header>
@@ -56,11 +120,14 @@ const AppContent = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<div className="container" style={{padding:'60px'}}><h2 style={{textAlign:'center'}}>Tính năng Đăng Ký đang chờ...</h2></div>} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/fields" element={<Fields />} />
-                <Route path="/booking" element={<Booking />} />
+                <Route path="/fields/:id" element={<FieldDetail />} />
+                <Route path="/booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
                 <Route path="/matches" element={<Matchmaking />} />
-                <Route path="/admin/*" element={<AdminDashboard />} />
+                <Route path="/admin/*" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/history" element={<ProtectedRoute><BookingHistory /></ProtectedRoute>} />
             </Routes>
         </main>
 

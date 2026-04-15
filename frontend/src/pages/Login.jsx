@@ -1,14 +1,34 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Giả lập lưu token vào localStorage
+    localStorage.setItem('token', 'mock-auth-token-123');
+    // Chuyển hướng người dùng về trang chủ
+    navigate('/');
+    // Trigger sự kiện storage để App.jsx cập nhật tức thì (nếu cần)
+    window.dispatchEvent(new Event('storage'));
+  };
 
   return (
-    <div style={{ padding: '60px 20px', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px 20px'
+    }}>
       <div style={{
-        backgroundColor: 'var(--bg-white)', padding: '40px', borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow-md)', width: '100%', maxWidth: '400px', textAlign: 'center'
+        backgroundColor: 'var(--bg-white)', padding: '50px 40px', borderRadius: '24px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', width: '100%', maxWidth: '400px', textAlign: 'center'
       }}>
         {/* LOGO ICON */}
         <div style={{
@@ -24,7 +44,7 @@ const Login = () => {
           Đăng nhập để đặt sân nhanh hơn và xem lịch sử
         </p>
 
-        <form style={{ textAlign: 'left' }} onSubmit={(e) => e.preventDefault()}>
+        <form style={{ textAlign: 'left' }} onSubmit={handleLogin}>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>Số điện thoại</label>
             <div style={{ position: 'relative' }}>
