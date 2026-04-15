@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
 import './index.css';
 
 import Login from './pages/Login';
@@ -28,10 +28,10 @@ const AppContent = () => {
                     </Link>
                     
                     <nav style={{ display: 'flex', gap: '24px', fontSize: '15px' }}>
-                        <Link to="/" style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 600 }}>Trang chủ</Link>
-                        <Link to="/fields" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm sân</Link>
-                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm kèo</Link>
-                        <Link to="/news" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tin tức</Link>
+                        <NavLink to="/" end style={({ isActive }) => ({ textDecoration: 'none', color: isActive ? 'var(--primary-color)' : '#0f172a', fontWeight: isActive ? 700 : 600 })}>Trang chủ</NavLink>
+                        <NavLink to="/fields" style={({ isActive }) => ({ textDecoration: 'none', color: isActive ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: isActive ? 700 : 500 })}>Tìm sân</NavLink>
+                        <NavLink to="/matches" style={({ isActive }) => ({ textDecoration: 'none', color: isActive ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: isActive ? 700 : 500 })}>Tìm kèo</NavLink>
+                        <NavLink to="/news" style={({ isActive }) => ({ textDecoration: 'none', color: isActive ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: isActive ? 700 : 500 })}>Tin tức</NavLink>
                     </nav>
                     
                     <div className="d-flex gap-1 align-center">
