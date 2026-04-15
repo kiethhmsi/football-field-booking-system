@@ -2,8 +2,64 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const hoverStyles = `
+    .category-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: block;
+      border-radius: 16px;
+      height: 250px;
+      text-decoration: none;
+      background-color: #000;
+    }
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    .category-card .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      opacity: 0.8;
+    }
+    .category-card:hover .card-img {
+      transform: scale(1.1);
+      opacity: 0.6;
+    }
+    .category-card .card-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      padding: 30px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .category-card .view-more {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-top: 5px;
+    }
+    .category-card:hover .view-more {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  `;
+
   return (
     <div style={{ fontFamily: 'Inter, sans-serif' }}>
+      <style>{hoverStyles}</style>
       {/* 1. HERO SECTION */}
       <section style={{ 
         position: 'relative', 
@@ -69,17 +125,17 @@ const Home = () => {
           <h2 style={{ fontSize: '28px', marginBottom: '30px', fontWeight: 800, color: '#0f172a' }}>Loại sân</h2>
           
           <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
-            {['Sân 5', 'Sân 7', 'Sân 11'].map((item, idx) => (
-              <Link to="/fields" state={{ filterType: item }} key={idx} style={{ 
-                flex: 1, minWidth: '180px', backgroundColor: 'white', padding: '50px 20px', 
-                borderRadius: '16px', textAlign: 'center', fontWeight: 700, fontSize: '18px', color: '#0f172a',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.03)', cursor: 'pointer', border: '1px solid #f1f5f9', textDecoration: 'none',
-                transition: 'transform 0.2s, box-shadow 0.2s'
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.08)' }}
-              onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)' }}
-              >
-                {item}
+            {[
+              { type: 'Sân 5', label: 'Sân 5 người', img: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop' },
+              { type: 'Sân 7', label: 'Sân 7 người', img: 'https://images.unsplash.com/photo-1620122303020-87ec826cf70d?q=80&w=600&auto=format&fit=crop' },
+              { type: 'Sân 11', label: 'Sân 11 người', img: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=600&auto=format&fit=crop' }
+            ].map((item, idx) => (
+              <Link to="/fields" state={{ filterType: item.type }} key={idx} style={{ flex: 1, minWidth: '220px' }} className="category-card">
+                <img src={item.img} alt={item.label} className="card-img" />
+                <div className="card-overlay">
+                  <span style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '0.5px' }}>{item.label}</span>
+                  <span className="view-more">Xem ngay ➔</span>
+                </div>
               </Link>
             ))}
           </div>
