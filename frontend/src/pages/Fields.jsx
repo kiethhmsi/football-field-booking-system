@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Fields = () => {
+  const location = useLocation();
+  const initialFilterType = location.state?.filterType || "Tất cả";
+
   // Dữ liệu Sân bóng mẫu (Mock data dựa vào database chúng ta đã thiết kế)
-  const [fields] = useState([
+  const [allFields] = useState([
     { id: 1, name: "Thăng Long Arena", type: "Sân 7", address: "Quận Cầu Giấy, Hà Nội", price: "400.000đ", image: "https://via.placeholder.com/400x200/0d8341/ffffff?text=San+Bong+A" },
     { id: 2, name: "Sân Bóng Chùa Láng", type: "Sân 5", address: "Đống Đa, Hà Nội", price: "250.000đ", image: "https://via.placeholder.com/400x200/0a6632/ffffff?text=San+Bong+B" },
     { id: 3, name: "Sân Cỏ Nhân Tạo KAKAKA", type: "Sân 7", address: "Gò Vấp, TP.HCM", price: "350.000đ", image: "https://via.placeholder.com/400x200/12b85a/ffffff?text=San+Bong+C" },
     { id: 4, name: "Sân Vận Động Bách Khoa", type: "Sân 11", address: "Hai Bà Trưng, Hà Nội", price: "1.200.000đ", image: "https://via.placeholder.com/400x200/0d8341/ffffff?text=San+Bong+D" },
   ]);
+
+  const [activeType, setActiveType] = useState(initialFilterType);
+  const fields = activeType === "Tất cả" ? allFields : allFields.filter(f => f.type === activeType);
 
   return (
     <div style={{ backgroundColor: 'var(--bg-light)', padding: '40px 0' }}>
@@ -26,6 +32,19 @@ const Fields = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
             <span style={{ fontSize: '18px' }}>⚙️</span>
             <h3 style={{ fontSize: '16px', margin: 0 }}>Bộ lọc tìm kiếm</h3>
+          </div>
+
+          <div style={{ marginBottom: '25px' }}>
+            <h4 style={{ fontSize: '14px', marginBottom: '10px', color: '#555' }}>Loại Sân</h4>
+            <select 
+              value={activeType} 
+              onChange={e => setActiveType(e.target.value)} 
+              style={{ padding: '8px', width: '100%', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', outline: 'none' }}>
+              <option value="Tất cả">Tất cả</option>
+              <option value="Sân 5">Sân 5 người</option>
+              <option value="Sân 7">Sân 7 người</option>
+              <option value="Sân 11">Sân 11 người</option>
+            </select>
           </div>
 
           <div style={{ marginBottom: '25px' }}>
@@ -51,7 +70,7 @@ const Fields = () => {
             </div>
           </div>
 
-          <button className="btn" style={{ width: '100%', backgroundColor: 'transparent', color: 'var(--text-main)', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+          <button className="btn" onClick={() => setActiveType("Tất cả")} style={{ width: '100%', backgroundColor: 'transparent', color: 'var(--text-main)', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
             Xóa tất cả bộ lọc
           </button>
           

@@ -70,7 +70,7 @@ const Home = () => {
           
           <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
             {['Sân 5', 'Sân 7', 'Sân 11'].map((item, idx) => (
-              <Link to="/fields" key={idx} style={{ 
+              <Link to="/fields" state={{ filterType: item }} key={idx} style={{ 
                 flex: 1, minWidth: '180px', backgroundColor: 'white', padding: '50px 20px', 
                 borderRadius: '16px', textAlign: 'center', fontWeight: 700, fontSize: '18px', color: '#0f172a',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.03)', cursor: 'pointer', border: '1px solid #f1f5f9', textDecoration: 'none',
