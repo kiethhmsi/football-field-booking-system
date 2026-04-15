@@ -27,11 +27,12 @@ const AppContent = () => {
                         <h2 style={{ color: 'var(--text-main)', fontSize: '20px', margin: 0, fontWeight: 800 }}>Sân bóng đá <span style={{ color: 'var(--primary-color)' }}>KAKAKA</span></h2>
                     </Link>
                     
-                    <nav className="d-flex gap-3" style={{ fontSize: '15px' }}>
+                    <nav style={{ display: 'flex', gap: '24px', fontSize: '15px' }}>
                         <Link to="/" style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 600 }}>Trang chủ</Link>
                         <Link to="/fields" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm sân</Link>
-                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--primary-color)', fontWeight: 600 }}>Tìm đồng đội</Link>
-                        <Link to="/matches" style={{ textDecoration: 'none', color: '#f59e0b', fontWeight: 600 }}>Tìm đối thủ</Link>
+                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm đồng đội</Link>
+                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm kèo</Link>
+                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm đối thủ</Link>
                         <Link to="/news" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tin tức</Link>
                     </nav>
                     
