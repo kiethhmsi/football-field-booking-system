@@ -30,9 +30,7 @@ const AppContent = () => {
                     <nav style={{ display: 'flex', gap: '24px', fontSize: '15px' }}>
                         <Link to="/" style={{ textDecoration: 'none', color: '#0f172a', fontWeight: 600 }}>Trang chủ</Link>
                         <Link to="/fields" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm sân</Link>
-                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm đồng đội</Link>
                         <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm kèo</Link>
-                        <Link to="/matches" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tìm đối thủ</Link>
                         <Link to="/news" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 500 }}>Tin tức</Link>
                     </nav>
                     
