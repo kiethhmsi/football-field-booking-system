@@ -35,15 +35,8 @@ const Home = () => {
           position: 'absolute', bottom: '-40px', left: '50%', transform: 'translateX(-50%)',
           backgroundColor: 'white', padding: '12px 15px', borderRadius: '50px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.15)', display: 'flex', gap: '15px', alignItems: 'center',
-          width: '90%', maxWidth: '950px', color: '#333', zIndex: 10
+          width: '90%', maxWidth: '800px', color: '#333', zIndex: 10
         }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', padding: '5px 20px', borderRight: '1px solid #e2e8f0' }}>
-            <span style={{color: 'var(--primary-color)', fontSize: '20px'}}>📍</span>
-            <div style={{ textAlign: 'left', width: '100%' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>QUẬN/HUYỆN</div>
-              <input type="text" placeholder="Tất cả khu vực" style={{ border: 'none', outline: 'none', width: '100%', fontSize: '14px', fontWeight: 600, padding: '5px 0 0 0', color: '#0f172a' }} />
-            </div>
-          </div>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '15px', padding: '5px 20px', borderRight: '1px solid #e2e8f0' }}>
             <span style={{color: 'var(--primary-color)', fontSize: '20px'}}>🏟️</span>
             <div style={{ textAlign: 'left', width: '100%' }}>
@@ -64,7 +57,7 @@ const Home = () => {
             </div>
           </div>
           <Link to="/fields" className="btn btn-primary" style={{ padding: '16px 40px', borderRadius: '40px', fontWeight: 700, fontSize: '15px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{fontSize:'16px'}}>Q</span> Tìm ngay
+            <span style={{fontSize:'16px'}}>🔍</span> Tìm ngay
           </Link>
         </div>
       </section>
