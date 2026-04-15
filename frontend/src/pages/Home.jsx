@@ -7,7 +7,7 @@ const Home = () => {
       {/* 1. HERO SECTION */}
       <section style={{ 
         position: 'relative', 
-        backgroundImage: 'linear-gradient(rgba(0,40,20,0.7), rgba(0,20,10,0.8)), url("https://images.unsplash.com/photo-1518605368461-1ee12db8bc55?q=80&w=2000&auto=format&fit=crop")',
+        backgroundImage: 'linear-gradient(rgba(0,40,20,0.3), rgba(0,20,10,0.4)), url("/hero-banner.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         padding: '120px 0 160px',
