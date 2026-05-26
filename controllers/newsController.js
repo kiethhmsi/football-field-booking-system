@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { syncNewsFromRSS } = require('../utils/newsCrawler');
 
 // --- 1. LẤY DANH SÁCH TIN TỨC TRANG CHỦ ---
 const getAllNews = async (req, res) => {
@@ -9,7 +10,7 @@ const getAllNews = async (req, res) => {
             FROM news 
             WHERE status = 'published' 
             ORDER BY published_at DESC 
-            LIMIT 10
+            LIMIT 12
         `);
 
         res.json({ message: 'Thành công', data: news });
@@ -45,4 +46,14 @@ const getNewsDetail = async (req, res) => {
     }
 };
 
-module.exports = { getAllNews, getNewsDetail };
+// --- 3. SYNC TIN TỨC TỪ RSS ---
+const syncNews = async (req, res) => {
+    const result = await syncNewsFromRSS();
+    if (result.success) {
+        res.json({ message: `Đã đồng bộ thành công ${result.count} bài viết mới!`, count: result.count });
+    } else {
+        res.status(500).json({ message: 'Lỗi khi đồng bộ tin tức', error: result.error });
+    }
+};
+
+module.exports = { getAllNews, getNewsDetail, syncNews };

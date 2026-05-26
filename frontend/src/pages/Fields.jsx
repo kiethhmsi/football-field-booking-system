@@ -1,143 +1,233 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import FieldCard from '../components/FieldCard';
+import Pagination from '../components/Pagination';
+import MapComponent from '../components/MapComponent';
+import MapSection from '../components/MapSection';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Map, List as ListIcon, Filter } from 'lucide-react';
 
-const Fields = () => {
+export default function Fields() {
   const location = useLocation();
-  const initialFilterType = location.state?.filterType || "Tất cả";
+  const [fields, setFields] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
+  
+  // Khởi tạo filter từ state nếu có (truyền từ trang chủ)
+  const [filters, setFilters] = useState({
+    pitchType: location.state?.searchData?.type || 'Tất cả loại sân',
+    minPrice: 0,
+    maxPrice: 5000000,
+    amenities: [],
+    search: location.state?.searchData?.search || ''
+  });
 
-  // Dữ liệu Sân bóng mẫu (Mock data dựa vào database chúng ta đã thiết kế)
-  const [allFields] = useState([
-    { id: 1, name: "Thăng Long Arena", type: "Sân 7", address: "Quận Cầu Giấy, Hà Nội", price: "400.000đ", image: "https://via.placeholder.com/400x200/0d8341/ffffff?text=San+Bong+A" },
-    { id: 2, name: "Sân Bóng Chùa Láng", type: "Sân 5", address: "Đống Đa, Hà Nội", price: "250.000đ", image: "https://via.placeholder.com/400x200/0a6632/ffffff?text=San+Bong+B" },
-    { id: 3, name: "Sân Cỏ Nhân Tạo KAKAKA", type: "Sân 7", address: "Gò Vấp, TP.HCM", price: "350.000đ", image: "https://via.placeholder.com/400x200/12b85a/ffffff?text=San+Bong+C" },
-    { id: 4, name: "Sân Vận Động Bách Khoa", type: "Sân 11", address: "Hai Bà Trưng, Hà Nội", price: "1.200.000đ", image: "https://via.placeholder.com/400x200/0d8341/ffffff?text=San+Bong+D" },
-  ]);
+  // Cập nhật filter nếu location state thay đổi (ví dụ bấm tìm lại từ trang chủ)
+  useEffect(() => {
+    if (location.state?.searchData) {
+      setFilters(prev => ({
+        ...prev,
+        pitchType: location.state.searchData.type || 'Tất cả loại sân',
+        search: location.state.searchData.search || ''
+      }));
+    }
+  }, [location.state]);
 
-  const [activeType, setActiveType] = useState(initialFilterType);
-  const fields = activeType === "Tất cả" ? allFields : allFields.filter(f => f.type === activeType);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // --- GỌI API LẤY DỮ LIỆU THẬT ---
+  useEffect(() => {
+    const fetchFields = async () => {
+      setLoading(true);
+      try {
+        const typeMapping = {
+          'Sân 5': '5_nguoi',
+          'Sân 7': '7_nguoi',
+          'Sân 11': '11_nguoi'
+        };
+        const typeParam = typeMapping[filters.pitchType] || '';
+        const response = await fetch(`http://localhost:3000/api/fields?search=${filters.search || ''}&type=${typeParam}`);
+        const result = await response.json();
+        if (result.data) {
+          setFields(result.data);
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy danh sách sân:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFields();
+  }, [filters.pitchType, filters.search]); // Gọi lại API khi đổi loại sân hoặc tìm kiếm
+
+  const filteredFields = useMemo(() => {
+    return fields.filter(field => {
+      const price = field.base_price || 0;
+      const matchPrice = price >= filters.minPrice && price <= filters.maxPrice;
+      
+      // Filter by amenities (Local filter for now)
+      const matchAmenities = filters.amenities.length === 0 || 
+        filters.amenities.every(a => (field.amenities || []).includes(a));
+
+      return matchPrice && matchAmenities;
+    });
+  }, [fields, filters.minPrice, filters.maxPrice, filters.amenities]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredFields.length / itemsPerPage);
+  const currentItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredFields.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredFields, currentPage]);
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to page 1 on filter change
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-light)', padding: '40px 0' }}>
-      
-      {/* SECTION GIỚI THIỆU */}
-      <div className="container" style={{ marginBottom: '30px' }}>
-        <h2 style={{ fontSize: '32px', marginBottom: '10px' }}>Khám phá Sân bóng <span style={{ color: 'var(--primary-color)' }}>cực VIP</span></h2>
-        <p style={{ color: 'var(--text-muted)' }}>Tìm kiếm và lên lịch đặt các sân bóng chất lượng cao quanh khu vực của bạn.</p>
-      </div>
-
-      <div className="container" style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-        
-        {/* CỘT BỘ LỌC TÌM KIẾM BÊN TRÁI */}
-        <aside style={{ backgroundColor: 'var(--bg-white)', padding: '20px', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-sm)', width: '280px', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-            <span style={{ fontSize: '18px' }}>⚙️</span>
-            <h3 style={{ fontSize: '16px', margin: 0 }}>Bộ lọc tìm kiếm</h3>
+    <div className="min-h-screen bg-white font-sans text-gray-900 overflow-x-hidden text-left">
+      <main>
+        {/* Hero Section - Synchronized with Matchmaking page */}
+        <section className="bg-emerald-50/30 pt-16 pb-12 px-6 md:px-12 border-b border-gray-100">
+          <div className="max-w-6xl mx-auto text-left">
+            <motion.h2 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-5xl font-black text-gray-900 mb-4 uppercase italic tracking-tighter"
+            >
+              Hệ thống <span className="text-emerald-600 underline decoration-emerald-200 underline-offset-8">sân bóng</span> KASPORT
+            </motion.h2>
+            <p className="max-w-2xl text-gray-500 font-medium leading-relaxed font-sans">
+              Trải nghiệm mặt sân cỏ nhân tạo đạt tiêu chuẩn quốc tế với hệ thống đèn chiếu sáng và tiện ích đỉnh cao cùng KaSport Complex.
+            </p>
           </div>
+        </section>
 
-          <div style={{ marginBottom: '25px' }}>
-            <h4 style={{ fontSize: '14px', marginBottom: '10px', color: '#555' }}>Loại Sân</h4>
-            <select 
-              value={activeType} 
-              onChange={e => setActiveType(e.target.value)} 
-              style={{ padding: '8px', width: '100%', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', outline: 'none' }}>
-              <option value="Tất cả">Tất cả</option>
-              <option value="Sân 5">Sân 5 người</option>
-              <option value="Sân 7">Sân 7 người</option>
-              <option value="Sân 11">Sân 11 người</option>
-            </select>
-          </div>
 
-          <div style={{ marginBottom: '25px' }}>
-            <h4 style={{ fontSize: '14px', marginBottom: '10px', color: '#555' }}>Trình độ đề xuất</h4>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', cursor: 'pointer', fontSize: '14px' }}>
-              <input type="checkbox" style={{ accentColor: 'var(--primary-color)' }} /> Giỏi (Chuyên nghiệp)
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', cursor: 'pointer', fontSize: '14px' }}>
-              <input type="checkbox" defaultChecked style={{ accentColor: 'var(--primary-color)' }} /> Khá (Bán chuyên)
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', cursor: 'pointer', fontSize: '14px' }}>
-              <input type="checkbox" style={{ accentColor: 'var(--primary-color)' }} /> Trung bình (Phong trào)
-            </label>
-          </div>
-
-          <div style={{ marginBottom: '25px' }}>
-            <h4 style={{ fontSize: '14px', marginBottom: '10px', color: '#555' }}>Khung thời gian</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <button style={{ padding: '8px', border: 'none', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--primary-color)', color: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>Sáng</button>
-              <button style={{ padding: '8px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-white)', cursor: 'pointer', fontSize: '13px' }}>Trưa</button>
-              <button style={{ padding: '8px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', backgroundColor: '#e2f0e8', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '13px' }}>Chiều</button>
-              <button style={{ padding: '8px', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', backgroundColor: '#e2f0e8', color: 'var(--primary-color)', cursor: 'pointer', fontSize: '13px' }}>Tối</button>
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-12">
+          <div className="flex flex-col lg:flex-row gap-12">
+            
+            {/* Sidebar */}
+            <div className="flex-shrink-0">
+              <Sidebar onFilterChange={handleFilterChange} filters={filters} />
             </div>
-          </div>
 
-          <button className="btn" onClick={() => setActiveType("Tất cả")} style={{ width: '100%', backgroundColor: 'transparent', color: 'var(--text-main)', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
-            Xóa tất cả bộ lọc
-          </button>
-          
-          {/* Banner phụ */}
-          <div style={{ backgroundColor: 'var(--primary-color)', color: 'white', padding: '20px', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-             <h4 style={{marginBottom: '5px', fontSize: '16px'}}>Đăng ký thành viên VIP</h4>
-             <p style={{fontSize: '12px', opacity: 0.9}}>Nhận thông báo sân giờ vàng và mã giảm giá rẻ nhất!</p>
-          </div>
-        </aside>
+            {/* Results */}
+            <div className="flex-1 text-left">
+              <div className="flex items-center justify-between mb-10">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tighter italic uppercase leading-none">Kết quả tìm kiếm</h2>
+                    <p className="text-gray-400 text-[10px] font-black mt-2 uppercase tracking-[0.2em] leading-none">Tìm thấy <span className="text-emerald-700">{filteredFields.length} sân bóng</span> phù hợp yêu cầu</p>
+                </motion.div>
 
-        {/* LƯỚI GRID DANH SÁCH SÂN (CỘT PHẢI) */}
-        <div style={{ flexGrow: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Đang hiển thị <strong>{fields.length}</strong> sân phù hợp</p>
-            <div style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-              SẮP XẾP: <strong style={{ color: 'var(--primary-color)', cursor: 'pointer', marginLeft: '5px' }}>Gần nhất ⌄</strong>
-            </div>
-          </div>
-
-          {/* Thiết kế Layout 2 Cột */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-            {fields.map(field => (
-              <div key={field.id} style={{ backgroundColor: 'var(--bg-white)', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-                {/* Ảnh cover */}
-                <div style={{ height: '200px', width: '100%', position: 'relative' }}>
-                  <img src={field.image} alt={field.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <span style={{ position: 'absolute', top: '15px', right: '15px', backgroundColor: 'var(--primary-color)', color: 'white', fontSize: '12px', padding: '4px 10px', borderRadius: '20px', fontWeight: 'bold' }}>KHUYẾN MÃI</span>
-                </div>
-                
-                {/* Body Thẻ */}
-                <div style={{ padding: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                    <h3 style={{ fontSize: '18px', margin: 0, fontWeight: 700 }}>{field.name}</h3>
-                    <span style={{ backgroundColor: '#e2f0e8', color: 'var(--primary-color)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>{field.type}</span>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px', marginBottom: '25px' }}>
-                    📍 {field.address}
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed var(--border-color)', paddingTop: '15px' }}>
-                    <div>
-                      <p style={{ fontSize: '16px', fontWeight: 900, color: '#f36f21', margin: 0 }}>{field.price}<span style={{fontSize:'12px', color:'var(--text-muted)', fontWeight:'normal'}}>/giờ</span></p>
-                    </div>
-                    {/* Nút bấm nhảy link sang Trang Đặt Sân Từng bước */}
-                    <Link to="/booking" className="btn btn-primary" style={{ padding: '10px 24px', textDecoration: 'none', borderRadius: '20px' }}>
-                      Đặt ngay
-                    </Link>
-                  </div>
+                <div className="flex bg-slate-100 p-1 rounded-2xl">
+                  <button 
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border-none cursor-pointer ${viewMode === 'list' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 bg-transparent'}`}
+                  >
+                    <ListIcon size={14} /> Danh sách
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('map')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all border-none cursor-pointer ${viewMode === 'map' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400 hover:text-slate-600 bg-transparent'}`}
+                  >
+                    <Map size={14} /> Bản đồ
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Phân trang (Pagination) chuẩn UX */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '40px' }}>
-            <button style={{ width:'35px', height:'35px', border:'1px solid var(--border-color)', backgroundColor:'var(--bg-white)', borderRadius:'var(--radius-sm)', cursor:'pointer' }}>&lt;</button>
-            <button style={{ width:'35px', height:'35px', border:'none', backgroundColor:'var(--primary-color)', color:'white', borderRadius:'var(--radius-sm)', fontWeight:'bold', cursor:'pointer' }}>1</button>
-            <button style={{ width:'35px', height:'35px', border:'1px solid var(--border-color)', backgroundColor:'var(--bg-white)', borderRadius:'var(--radius-sm)', cursor:'pointer' }}>2</button>
-            <button style={{ width:'35px', height:'35px', border:'1px solid var(--border-color)', backgroundColor:'var(--bg-white)', borderRadius:'var(--radius-sm)', cursor:'pointer' }}>3</button>
-            <button style={{ width:'35px', height:'35px', border:'1px solid var(--border-color)', backgroundColor:'var(--bg-white)', borderRadius:'var(--radius-sm)', cursor:'pointer' }}>&gt;</button>
-          </div>
+              <div className="flex flex-col gap-8 min-h-[400px]">
+                <AnimatePresence mode="wait">
+                  {loading ? (
+                    <motion.div 
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex flex-col items-center justify-center py-20"
+                    >
+                      <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mb-4"></div>
+                      <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Đang tải dữ liệu sân bóng...</p>
+                    </motion.div>
+                  ) : viewMode === 'map' ? (
+                    <motion.div
+                      key="map-view"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="h-[600px] w-full"
+                    >
+                      <MapComponent 
+                        className="h-full"
+                        points={filteredFields.map(f => ({
+                          lat: f.latitude,
+                          lng: f.longitude,
+                          popupContent: `
+                            <div style="padding: 10px; width: 180px;">
+                              <img src="${f.image}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 10px; margin-bottom: 8px;" />
+                              <h4 style="margin: 0; font-size: 14px; font-weight: 900; text-transform: uppercase;">${f.name}</h4>
+                              <p style="margin: 4px 0; font-size: 10px; color: #64748b;">${f.address}</p>
+                              <p style="margin: 8px 0 0; font-size: 12px; font-weight: 800; color: #059669;">Từ ${new Intl.NumberFormat('vi-VN').format(f.base_price)}đ</p>
+                              <a href="/fields/${f.id}" style="display: block; margin-top: 10px; background: #10b981; color: white; text-align: center; padding: 6px; border-radius: 8px; text-decoration: none; font-size: 10px; font-weight: 900; text-transform: uppercase;">Đặt ngay</a>
+                            </div>
+                          `
+                        }))}
+                      />
+                    </motion.div>
+                  ) : currentItems.length > 0 ? (
+                    <div className="flex flex-col gap-8">
+                      {currentItems.map((field, index) => (
+                        <FieldCard key={field.id} field={field} index={index} />
+                      ))}
+                    </div>
+                  ) : (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200"
+                    >
+                       <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
+                          <Filter size={40} />
+                       </div>
+                       <h3 className="text-xl font-bold text-gray-400 italic uppercase tracking-tighter">Không tìm thấy sân phù hợp</h3>
+                       <p className="text-gray-400 text-sm mt-2">Thử thay đổi bộ lọc để tìm thấy nhiều lựa chọn hơn bạn nhé!</p>
+                       <button 
+                         onClick={() => setFilters({ pitchType: 'Tất cả loại sân', minPrice: 0, maxPrice: 5000000, amenities: [], search: '' })}
+                         className="mt-6 text-emerald-600 font-bold uppercase text-[10px] tracking-widest border-b-2 border-emerald-600 pb-1"
+                       >
+                          Đặt lại bộ lọc
+                       </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+
         </div>
-
       </div>
+        
+      {/* Map System Section - Right before Footer */}
+        <MapSection />
+      </main>
     </div>
   );
-};
+}
 
-export default Fields;
